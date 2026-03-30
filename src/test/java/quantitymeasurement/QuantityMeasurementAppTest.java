@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import quantitymeasurement.model.LengthUnit;
 import quantitymeasurement.model.Quantity;
+import quantitymeasurement.model.VolumeUnit;
 import quantitymeasurement.model.WeightUnit;
 
 import java.io.ByteArrayOutputStream;
@@ -114,5 +115,51 @@ public class QuantityMeasurementAppTest {
         Quantity<WeightUnit> result = w1.add(w2, WeightUnit.KILOGRAM);
 
         assertEquals(10.0, result.getValue());
+    }
+    
+    
+    @Test
+    void testEquality_LitreToMillilitre() {
+        Quantity<VolumeUnit> litre = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> ml = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+
+        assertTrue(litre.equals(ml));
+    }
+
+    @Test
+    void testEquality_LitreToGallon() {
+        Quantity<VolumeUnit> litre = new Quantity<>(3.78541, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> gallon = new Quantity<>(1.0, VolumeUnit.GALLON);
+
+        assertTrue(litre.equals(gallon));
+    }
+
+    @Test
+    void testConversion_LitreToMillilitre() {
+        Quantity<VolumeUnit> litre = new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<VolumeUnit> result = litre.convertTo(VolumeUnit.MILLILITRE);
+
+        assertEquals(1000.0, result.getValue(), 0.0001);
+    }
+
+    @Test
+    void testAddition_LitrePlusMillilitre() {
+        Quantity<VolumeUnit> litre = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> ml = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+
+        Quantity<VolumeUnit> result = litre.add(ml);
+
+        assertEquals(2.0, result.getValue(), 0.0001);
+    }
+
+    @Test
+    void testAddition_ExplicitTargetUnit() {
+        Quantity<VolumeUnit> litre = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> ml = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+
+        Quantity<VolumeUnit> result = litre.add(ml, VolumeUnit.MILLILITRE);
+
+        assertEquals(2000.0, result.getValue(), 0.0001);
     }
 }

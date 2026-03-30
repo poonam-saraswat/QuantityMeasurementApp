@@ -3,6 +3,7 @@ package quantitymeasurement;
 import quantitymeasurement.model.IMeasurable;
 import quantitymeasurement.model.LengthUnit;
 import quantitymeasurement.model.Quantity;
+import quantitymeasurement.model.VolumeUnit;
 import quantitymeasurement.model.WeightUnit;
 
 public class QuantityMeasurementApp {
@@ -46,5 +47,22 @@ public class QuantityMeasurementApp {
         demonstrateEquality(w1, w2);
         demonstrateConversion(w1, WeightUnit.GRAM);
         demonstrateAddition(w1, w2, WeightUnit.KILOGRAM);
+        
+        
+        Quantity<VolumeUnit> volume1 = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> volume2 = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+        Quantity<VolumeUnit> volume3 = new Quantity<>(1.0, VolumeUnit.GALLON);
+
+        // Equality
+        System.out.println(volume1.equals(volume2)); // true
+        System.out.println(volume1.equals(volume3)); // approx false
+
+        // Conversion
+        System.out.println(volume1.convertTo(VolumeUnit.MILLILITRE));
+        System.out.println(volume3.convertTo(VolumeUnit.LITRE));
+
+        // Addition
+        System.out.println(volume1.add(volume2));
+        System.out.println(volume1.add(volume3, VolumeUnit.MILLILITRE));
     }
 }
