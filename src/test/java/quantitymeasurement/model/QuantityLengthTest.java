@@ -80,7 +80,6 @@ public class QuantityLengthTest {
                 () -> q.convertTo(null));
     }
 
-    // ---------------- ADDITION TESTS ----------------
 
     @Test
     void testAddition_SameUnit_FeetPlusFeet() {

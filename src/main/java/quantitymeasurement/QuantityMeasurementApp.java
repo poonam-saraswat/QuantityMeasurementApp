@@ -2,6 +2,8 @@ package quantitymeasurement;
 
 import quantitymeasurement.model.LengthUnit;
 import quantitymeasurement.model.QuantityLength;
+import quantitymeasurement.model.QuantityWeight;
+import quantitymeasurement.model.WeightUnit;
 
 public class QuantityMeasurementApp {
 	public static void main(String[] args) {
@@ -18,5 +20,22 @@ public class QuantityMeasurementApp {
         QuantityLength q4 = new QuantityLength(1.0, LengthUnit.YARDS);
 
         System.out.println(q3.equals(q4));
+        
+        QuantityWeight w1 = new QuantityWeight(1, WeightUnit.KILOGRAM);
+        QuantityWeight w2 = new QuantityWeight(1000, WeightUnit.GRAM);
+
+        System.out.println("Equality:");
+        System.out.println(w1.equals(w2));
+
+        System.out.println("\nConversion:");
+        System.out.println(w1.convertTo(WeightUnit.GRAM));
+
+        System.out.println("\nAddition:");
+        System.out.println(w1.add(w2));
+
+        System.out.println("\nAddition with target unit:");
+        System.out.println(w1.add(w2, WeightUnit.GRAM));
+        
+        
 	}
 }
