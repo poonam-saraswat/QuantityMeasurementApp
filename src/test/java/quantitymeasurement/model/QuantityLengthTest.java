@@ -38,4 +38,6 @@ public class QuantityLengthTest {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
         assertTrue(q1.equals(q1));
     }
+    
+    
 }
