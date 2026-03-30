@@ -41,17 +41,17 @@ public class QuantityMeasurementApp {
 		        new QuantityLength(1.0, LengthUnit.CENTIMETERS);
 
 		QuantityLength q4 =
-		        new QuantityLength(0.393701, LengthUnit.INCH);
+		        new QuantityLength(0.393701, LengthUnit.INCHES);
 
 		System.out.println("Input: " + q3 + " and " + q4);
 		System.out.println("Output: Equal (" + q3.equals(q4) + ")");	
 		
 		 //UC5 Conversion Tests
-	    demonstrateLengthConversion(1.0, LengthUnit.FEET, LengthUnit.INCH);
+	    demonstrateLengthConversion(1.0, LengthUnit.FEET, LengthUnit.INCHES);
 	    demonstrateLengthConversion(3.0, LengthUnit.YARDS, LengthUnit.FEET);
-	    demonstrateLengthConversion(36.0, LengthUnit.INCH, LengthUnit.YARDS);
-	    demonstrateLengthConversion(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCH);
-	    demonstrateLengthConversion(0.0, LengthUnit.FEET, LengthUnit.INCH);
+	    demonstrateLengthConversion(36.0, LengthUnit.INCHES, LengthUnit.YARDS);
+	    demonstrateLengthConversion(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCHES);
+	    demonstrateLengthConversion(0.0, LengthUnit.FEET, LengthUnit.INCHES);
 
 	    System.out.println();
 
@@ -60,7 +60,7 @@ public class QuantityMeasurementApp {
 	    QuantityLength lengthInYards =
 	            new QuantityLength(2.0, LengthUnit.YARDS);
 
-	    demonstrateLengthConversion(lengthInYards, LengthUnit.INCH);
+	    demonstrateLengthConversion(lengthInYards, LengthUnit.INCHES);
 	    
 	    
 	    
@@ -71,7 +71,7 @@ public class QuantityMeasurementApp {
 	         new QuantityLength(1.0, LengthUnit.FEET);
 
 	 QuantityLength b =
-	         new QuantityLength(12.0, LengthUnit.INCH);
+	         new QuantityLength(12.0, LengthUnit.INCHES);
 
 	 QuantityLength result1 = a.add(b);
 
@@ -80,7 +80,7 @@ public class QuantityMeasurementApp {
 	 System.out.println();
 
 	 QuantityLength result2 =
-	         QuantityLength.add(a, b, LengthUnit.INCH);
+	         QuantityLength.add(a, b, LengthUnit.INCHES);
 
 	 System.out.println("add(" + a + ", " + b + ") in INCH");
 	 System.out.println("Output: " + result2);

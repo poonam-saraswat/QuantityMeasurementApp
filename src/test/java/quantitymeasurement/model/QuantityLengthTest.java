@@ -18,7 +18,7 @@ public class QuantityLengthTest {
 
     @Test
     void testEquality_InchToFeet_EquivalentValue() {
-        QuantityLength q1 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q1 = new QuantityLength(12.0, LengthUnit.INCHES);
         QuantityLength q2 = new QuantityLength(1.0, LengthUnit.FEET);
         assertTrue(q1.equals(q2));
     }
@@ -46,14 +46,14 @@ public class QuantityLengthTest {
     @Test
     void testConversion_FeetToInches() {
         assertEquals(12.0,
-            QuantityLength.convert(1.0, FEET, INCH),
+            QuantityLength.convert(1.0, FEET, INCHES),
             1e-6);
     }
 
     @Test
     void testConversion_YardsToInches() {
         assertEquals(36.0,
-            QuantityLength.convert(1.0, YARDS, INCH),
+            QuantityLength.convert(1.0, YARDS, INCHES),
             1e-6);
     }
 
@@ -90,7 +90,7 @@ public class QuantityLengthTest {
     @Test
     void testAddition_CrossUnit_FeetPlusInches() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
         QuantityLength result = q1.add(q2);
 
@@ -100,7 +100,7 @@ public class QuantityLengthTest {
     @Test
     void testAddition_Commutativity() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
         QuantityLength r1 = q1.add(q2);
         QuantityLength r2 = q2.add(q1);
@@ -111,7 +111,7 @@ public class QuantityLengthTest {
     @Test
     void testAddition_WithZero() {
         QuantityLength q1 = new QuantityLength(5.0, LengthUnit.FEET);
-        QuantityLength zero = new QuantityLength(0.0, LengthUnit.INCH);
+        QuantityLength zero = new QuantityLength(0.0, LengthUnit.INCHES);
 
         QuantityLength result = q1.add(zero);
 
