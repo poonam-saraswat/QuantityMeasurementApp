@@ -22,7 +22,8 @@ public enum TemperatureUnit implements IMeasurable {
     private final Function<Double, Double> toBase;
     private final Function<Double, Double> fromBase;
 
-    TemperatureUnit(Function<Double, Double> toBase, Function<Double, Double> fromBase) {
+    TemperatureUnit(Function<Double, Double> toBase,
+                    Function<Double, Double> fromBase) {
         this.toBase = toBase;
         this.fromBase = fromBase;
     }
@@ -42,18 +43,15 @@ public enum TemperatureUnit implements IMeasurable {
         return name();
     }
 
-    // Temperature does NOT support arithmetic
-    SupportsArithmetic supportsArithmetic = () -> false;
-
     @Override
     public boolean supportsArithmetic() {
-        return supportsArithmetic.isSupported();
+        return false;
     }
 
     @Override
     public void validateOperationSupport(String operation) {
         throw new UnsupportedOperationException(
-                "Temperature does not support " + operation + " operation."
+                "Temperature does not support " + operation + " operation"
         );
     }
 }

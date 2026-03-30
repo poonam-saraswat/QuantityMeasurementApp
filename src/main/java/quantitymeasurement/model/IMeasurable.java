@@ -20,6 +20,10 @@ public interface IMeasurable {
     }
 
     default void validateOperationSupport(String operation) {
-        // default allows arithmetic
+        if (!supportsArithmetic()) {
+            throw new UnsupportedOperationException(
+                    getUnitName() + " does not support " + operation + " operation"
+            );
+        }
     }
 }
