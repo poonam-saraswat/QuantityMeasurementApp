@@ -61,6 +61,29 @@ public class QuantityMeasurementApp {
 	            new QuantityLength(2.0, LengthUnit.YARDS);
 
 	    demonstrateLengthConversion(lengthInYards, LengthUnit.INCH);
+	    
+	    
+	    
+	    System.out.println();
+
+	 // UC6 Addition Tests
+	 QuantityLength a =
+	         new QuantityLength(1.0, LengthUnit.FEET);
+
+	 QuantityLength b =
+	         new QuantityLength(12.0, LengthUnit.INCH);
+
+	 QuantityLength result1 = a.add(b);
+
+	 System.out.println("add(" + a + ", " + b + ")");
+	 System.out.println("Output: " + result1);
+	 System.out.println();
+
+	 QuantityLength result2 =
+	         QuantityLength.add(a, b, LengthUnit.INCH);
+
+	 System.out.println("add(" + a + ", " + b + ") in INCH");
+	 System.out.println("Output: " + result2);
 		
 	}
 }

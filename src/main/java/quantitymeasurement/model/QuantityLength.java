@@ -36,6 +36,52 @@ public class QuantityLength {
         // Step 2: Convert from base to target
         return target.fromFeet(inFeet);
     }
+    
+    // UC6 — Instance addition
+    public QuantityLength add(QuantityLength other) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Second operand cannot be null");
+
+        // Convert both to base unit (feet)
+        double sumInFeet = this.toBase() + other.toBase();
+
+        // Convert result back to unit of first operand
+        double resultValue = unit.fromFeet(sumInFeet);
+
+        return new QuantityLength(resultValue, this.unit);
+    }
+    
+    public static QuantityLength add(
+            QuantityLength q1,
+            QuantityLength q2,
+            LengthUnit targetUnit) {
+
+        if (q1 == null || q2 == null)
+            throw new IllegalArgumentException("Operands cannot be null");
+
+        if (targetUnit == null)
+            throw new IllegalArgumentException("Target unit cannot be null");
+
+        double sumInFeet = q1.toBase() + q2.toBase();
+
+        double resultValue = targetUnit.fromFeet(sumInFeet);
+
+        return new QuantityLength(resultValue, targetUnit);
+    }
+    
+    public static QuantityLength add(
+            double v1, LengthUnit u1,
+            double v2, LengthUnit u2,
+            LengthUnit targetUnit) {
+
+        QuantityLength q1 = new QuantityLength(v1, u1);
+        QuantityLength q2 = new QuantityLength(v2, u2);
+
+        return add(q1, q2, targetUnit);
+    }
+    
+    
 
     // Instance conversion (returns new immutable object)
     public QuantityLength convertTo(LengthUnit target) {
