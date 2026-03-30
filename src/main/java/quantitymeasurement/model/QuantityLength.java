@@ -6,52 +6,61 @@ public class QuantityLength {
 	private final double value;
     private final LengthUnit unit;
 
-    public QuantityLength(double value, LengthUnit unit) {
-        if (Double.isNaN(value) || Double.isInfinite(value)) {
-            throw new IllegalArgumentException("Invalid numeric value");
-        }
+    private static final double EPSILON = 1e-6;
 
-        if (unit == null) {
+    public QuantityLength(double value, LengthUnit unit) {
+        if (!Double.isFinite(value))
+            throw new IllegalArgumentException("Invalid numeric value");
+
+        if (unit == null)
             throw new IllegalArgumentException("Unit cannot be null");
-        }
 
         this.value = value;
         this.unit = unit;
     }
 
-    public double getValue() {
-        return value;
+    //  UC5 
+    public static double convert(double value,
+                                 LengthUnit source,
+                                 LengthUnit target) {
+
+        if (!Double.isFinite(value))
+            throw new IllegalArgumentException("Invalid numeric value");
+
+        if (source == null || target == null)
+            throw new IllegalArgumentException("Unit cannot be null");
+
+        // Step 1: Convert to base unit (feet)
+        double inFeet = source.toFeet(value);
+
+        // Step 2: Convert from base to target
+        return target.fromFeet(inFeet);
     }
 
-    public LengthUnit getUnit() {
-        return unit;
+    // Instance conversion (returns new immutable object)
+    public QuantityLength convertTo(LengthUnit target) {
+        double convertedValue =
+                convert(this.value, this.unit, target);
+
+        return new QuantityLength(convertedValue, target);
     }
 
-    private double convertToBase() {
-        return unit.toFeet(value);   // convert everything to FEET
+    private double toBase() {
+        return unit.toFeet(value);
     }
 
     @Override
     public boolean equals(Object obj) {
-
         if (this == obj) return true;
-
-        if (obj == null || getClass() != obj.getClass())
-            return false;
+        if (!(obj instanceof QuantityLength)) return false;
 
         QuantityLength other = (QuantityLength) obj;
 
-        return Double.compare(this.convertToBase(),
-                              other.convertToBase()) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(convertToBase());
+        return Math.abs(this.toBase() - other.toBase()) < EPSILON;
     }
 
     @Override
     public String toString() {
-        return "Quantity(" + value + ", \"" + unit.name().toLowerCase() + "\")";
+        return "Quantity(" + value + ", " + unit + ")";
     }
 }

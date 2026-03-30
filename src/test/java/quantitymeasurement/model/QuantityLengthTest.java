@@ -1,7 +1,10 @@
 package quantitymeasurement.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static quantitymeasurement.model.LengthUnit.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,5 +42,38 @@ public class QuantityLengthTest {
         assertTrue(q1.equals(q1));
     }
     
+    
+    @Test
+    void testConversion_FeetToInches() {
+        assertEquals(12.0,
+            QuantityLength.convert(1.0, FEET, INCH),
+            1e-6);
+    }
+
+    @Test
+    void testConversion_YardsToInches() {
+        assertEquals(36.0,
+            QuantityLength.convert(1.0, YARDS, INCH),
+            1e-6);
+    }
+
+    @Test
+    void testConversion_RoundTrip() {
+        double original = 5.0;
+
+        double converted =
+            QuantityLength.convert(original, FEET, YARDS);
+
+        double back =
+            QuantityLength.convert(converted, YARDS, FEET);
+
+        assertEquals(original, back, 1e-6);
+    }
+
+    @Test
+    void testConversion_InvalidUnit() {
+        assertThrows(IllegalArgumentException.class,
+            () -> QuantityLength.convert(1.0, null, FEET));
+    }
     
 }
