@@ -64,5 +64,21 @@ public class QuantityMeasurementApp {
         // Addition
         System.out.println(volume1.add(volume2));
         System.out.println(volume1.add(volume3, VolumeUnit.MILLILITRE));
+        
+        
+        Quantity<LengthUnit> q1 = new Quantity<>(10, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(6, LengthUnit.INCHES);
+
+        // subtraction
+        System.out.println(q1.subtract(q2));
+        // Quantity(9.5, Feet)
+
+        // explicit target
+        System.out.println(q1.subtract(q2, LengthUnit.INCHES));
+        // Quantity(114.0, Inches)
+
+        // division
+        System.out.println(q1.divide(q2));
+        // 20.0
     }
 }

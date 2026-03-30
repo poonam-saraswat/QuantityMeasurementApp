@@ -93,4 +93,49 @@ public class Quantity<U extends IMeasurable> {
     public String toString() {
         return "Quantity(" + value + ", " + unit.getUnitName() + ")";
     }
+    
+ // Subtraction
+
+    public Quantity<U> subtract(Quantity<U> other) {
+        return subtract(other, this.unit);
+    }
+
+    public Quantity<U> subtract(Quantity<U> other, U targetUnit) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Other quantity cannot be null");
+
+        if (targetUnit == null)
+            throw new IllegalArgumentException("Target unit cannot be null");
+
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Cannot subtract different measurement categories");
+
+        double baseResult =
+                this.toBaseUnit() -
+                other.toBaseUnit();
+
+        double result = targetUnit.convertFromBaseUnit(baseResult);
+
+        return new Quantity<>(result, targetUnit);
+    }
+
+
+    // Division
+
+    public double divide(Quantity<U> other) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Other quantity cannot be null");
+
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Cannot divide different measurement categories");
+
+        double divisor = other.toBaseUnit();
+
+        if (Math.abs(divisor) < EPSILON)
+            throw new ArithmeticException("Division by zero quantity");
+
+        return this.toBaseUnit() / divisor;
+    }
 }
