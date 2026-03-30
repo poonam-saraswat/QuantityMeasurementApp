@@ -35,7 +35,6 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // Arithmetic Operation ENUM
-
     private enum ArithmeticOperation {
 
         ADD((a, b) -> a + b),
@@ -57,8 +56,7 @@ public class Quantity<U extends IMeasurable> {
         }
     }
 
-    // Centralized Validation
-
+    // Validation
     private void validateArithmeticOperands(Quantity<U> other, U targetUnit, boolean targetUnitRequired) {
 
         if (other == null)
@@ -69,10 +67,11 @@ public class Quantity<U extends IMeasurable> {
 
         if (targetUnitRequired && targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
+
+        unit.validateOperationSupport("ARITHMETIC");
     }
 
-    // Central Arithmetic Helper
-
+    // Central arithmetic helper
     private double performBaseArithmetic(Quantity<U> other, ArithmeticOperation operation) {
 
         double base1 = this.toBaseUnit();
@@ -82,7 +81,6 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // Equality
-
     @Override
     public boolean equals(Object obj) {
 
@@ -109,20 +107,21 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // Conversion
-
     public Quantity<U> convertTo(U targetUnit) {
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
 
-        double base = this.toBaseUnit();
-        double converted = targetUnit.convertFromBaseUnit(base);
+        if (!unit.getClass().equals(targetUnit.getClass()))
+            throw new IllegalArgumentException("Incompatible unit conversion");
 
-        return new Quantity<>(converted, targetUnit);
+        double baseValue = unit.convertToBaseUnit(value);
+        double convertedValue = targetUnit.convertFromBaseUnit(baseValue);
+
+        return new Quantity<>(convertedValue, targetUnit);
     }
 
     // Addition
-
     public Quantity<U> add(Quantity<U> other) {
         return add(other, this.unit);
     }
@@ -139,7 +138,6 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // Subtraction
-
     public Quantity<U> subtract(Quantity<U> other) {
         return subtract(other, this.unit);
     }
@@ -156,14 +154,12 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // Division
-
     public double divide(Quantity<U> other) {
 
         validateArithmeticOperands(other, null, false);
 
         return performBaseArithmetic(other, ArithmeticOperation.DIVIDE);
     }
-
 
     @Override
     public String toString() {

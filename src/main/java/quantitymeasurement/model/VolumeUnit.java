@@ -1,7 +1,8 @@
 package quantitymeasurement.model;
 
 public enum VolumeUnit implements IMeasurable {
-	LITRE(1.0, "Litre"),
+
+    LITRE(1.0, "Litre"),
     MILLILITRE(0.001, "Millilitre"),
     GALLON(3.78541, "Gallon");
 
@@ -11,11 +12,6 @@ public enum VolumeUnit implements IMeasurable {
     VolumeUnit(double conversionFactor, String unitName) {
         this.conversionFactor = conversionFactor;
         this.unitName = unitName;
-    }
-
-    @Override
-    public double getConversionFactor() {
-        return conversionFactor;
     }
 
     @Override
