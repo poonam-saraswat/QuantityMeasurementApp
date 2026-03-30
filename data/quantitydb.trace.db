@@ -1,26 +1,3 @@
-2026-03-30 22:37:53.606333+05:30 database: wrong user or password; user: "POONAM_SARASWAT"
-org.h2.message.DbException: Wrong user name or password [28000-224]
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.message.DbException.get(DbException.java:188)
-	at org.h2.engine.Engine.openSession(Engine.java:154)
-	at org.h2.engine.Engine.openSession(Engine.java:222)
-	at org.h2.engine.Engine.createSession(Engine.java:201)
-	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:343)
-	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:125)
-	at org.h2.Driver.connect(Driver.java:59)
-	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:682)
-	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:230)
-	at com.app.quantitymeasurement.utility.ConnectionPool.createConnection(ConnectionPool.java:85)
-	at com.app.quantitymeasurement.utility.ConnectionPool.initializeConnections(ConnectionPool.java:75)
-	at com.app.quantitymeasurement.utility.ConnectionPool.<init>(ConnectionPool.java:53)
-	at com.app.quantitymeasurement.utility.ConnectionPool.getInstance(ConnectionPool.java:64)
-	at com.app.quantitymeasurement.repository.QuantityMeasurementDatabaseRepository.<init>(QuantityMeasurementDatabaseRepository.java:48)
-	at com.app.quantitymeasurement.repository.QuantityMeasurementDatabaseRepository.getInstance(QuantityMeasurementDatabaseRepository.java:90)
-	at com.app.quantitymeasurement.QuantityMeasurementApp.<init>(QuantityMeasurementApp.java:33)
-	at com.app.quantitymeasurement.QuantityMeasurementApp.getInstance(QuantityMeasurementApp.java:48)
-	at com.app.quantitymeasurement.QuantityMeasurementApp.main(QuantityMeasurementApp.java:85)
-Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name or password [28000-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	... 20 more
+2026-03-18 13:03:22.935590+05:30 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "show tables [*]*  QUANTITY_MEASUREMENTS"; SQL statement:
+show tables *  QUANTITY_MEASUREMENTS [42000-224]

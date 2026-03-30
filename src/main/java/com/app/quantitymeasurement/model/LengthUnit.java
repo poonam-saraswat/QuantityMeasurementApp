@@ -2,8 +2,6 @@ package com.app.quantitymeasurement.model;
 
 // Enum with conversion factor to base unit (inches)
 
-import com.app.quantitymeasurement.model.IMeasurable;
-
 public enum LengthUnit implements IMeasurable {
     FEET(12.0), // 1 feet = 12 inches
     INCHES(1.0), // 1 inch = 1 inch

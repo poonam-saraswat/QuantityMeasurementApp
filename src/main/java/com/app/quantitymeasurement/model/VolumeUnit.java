@@ -1,7 +1,5 @@
 package com.app.quantitymeasurement.model;
 
-import com.app.quantitymeasurement.model.IMeasurable;
-
 public enum VolumeUnit implements IMeasurable {
     LITRE(1.0), // base unit
     MILLILITRE(0.001), // 1L = 1000ml

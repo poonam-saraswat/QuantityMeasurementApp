@@ -1,7 +1,5 @@
 package com.app.quantitymeasurement.model;
 
-import com.app.quantitymeasurement.model.IMeasurable;
-
 public enum WeightUnit implements IMeasurable {
     // Conversion factor to the base unit (grams)
     MILLIGRAM(0.001),

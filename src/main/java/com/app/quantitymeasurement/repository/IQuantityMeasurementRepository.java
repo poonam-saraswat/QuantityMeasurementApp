@@ -1,32 +1,37 @@
 package com.app.quantitymeasurement.repository;
 
 import com.app.quantitymeasurement.entity.QuantityMeasurementEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
-public interface IQuantityMeasurementRepository {
+/**
+ * UC17 - Spring Data JPA repository.
+ * Replaces all JDBC boilerplate from UC16.
+ * findAll(), save(), deleteAll(), count() are inherited from JpaRepository.
+ */
+@Repository
+public interface IQuantityMeasurementRepository
+        extends JpaRepository<QuantityMeasurementEntity, Long> {
 
-    // Save a QuantityMeasurementEntity to the repository
-    void save(QuantityMeasurementEntity entity);
+    /** All records for a given operation type (COMPARE, ADD, etc.) */
+    List<QuantityMeasurementEntity> findByOperation(String operation);
 
-    // Retrieve all QuantityMeasurementEntity instances from the repository
-    List<QuantityMeasurementEntity> getAllMeasurements();
+    /** All records for a given measurement type (LengthUnit, WeightUnit, etc.) */
+    List<QuantityMeasurementEntity> findByThisMeasurementType(String type);
 
-    List<QuantityMeasurementEntity> getMeasurementsByOperation(String operation);
+    /** All error records */
+    List<QuantityMeasurementEntity> findByIsError(boolean isError);
 
-    List<QuantityMeasurementEntity> getMeasurementsByType(String measurementType);
+    /** Count successful records for a given operation */
+    long countByOperationAndIsErrorFalse(String operation);
 
-    int getTotalCount();
-
-    void deleteAll();
-
-    default String getPoolStatistics() {
-        return "Pool statistics not available for this repository implementation.";
-    }
-
-    default void releaseResources() { }
-
-    // Main method for quick testing
-    public static void main(String[] args) {
-        System.out.println("Testing IQuantityMeasurementRepository interface");
-    }
+    /** Custom JPQL: successful records for a given operation */
+    @Query("SELECT e FROM QuantityMeasurementEntity e " +
+           "WHERE e.operation = :operation AND e.isError = false " +
+           "ORDER BY e.createdAt DESC")
+    List<QuantityMeasurementEntity> findSuccessfulByOperation(@Param("operation") String operation);
 }

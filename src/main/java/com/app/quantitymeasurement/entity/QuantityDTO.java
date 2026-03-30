@@ -1,104 +1,71 @@
 package com.app.quantitymeasurement.entity;
 
-interface IMeasurableUnit{
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
+interface IMeasurableUnit {
     String getUnitName();
     String getMeasurementType();
 }
 
 public class QuantityDTO {
-    public enum LengthUnit implements IMeasurableUnit{
+
+    public enum LengthUnit implements IMeasurableUnit {
         FEET, INCHES, YARDS, CENTIMETERS;
-
-        @Override
-        public String getUnitName() {
-            return this.name();
-        }
-
-        @Override
-        public String getMeasurementType() {
-            return this.getClass().getSimpleName();
-        }
+        public String getUnitName()        { return this.name(); }
+        public String getMeasurementType() { return this.getClass().getSimpleName(); }
     }
 
-    public enum VolumeUnit implements IMeasurableUnit{
+    public enum VolumeUnit implements IMeasurableUnit {
         LITRE, MILLILITRE, GALLON;
-
-        @Override
-        public String getUnitName() {
-            return this.name();
-        }
-
-        @Override
-        public String getMeasurementType() {
-            return this.getClass().getSimpleName();
-        }
+        public String getUnitName()        { return this.name(); }
+        public String getMeasurementType() { return this.getClass().getSimpleName(); }
     }
 
-    public enum WeightUnit implements IMeasurableUnit{
+    public enum WeightUnit implements IMeasurableUnit {
         MILLIGRAM, GRAM, KILOGRAM, POUND, TONNE;
-
-        @Override
-        public String getUnitName() {
-            return this.name();
-        }
-
-        @Override
-        public String getMeasurementType() {
-            return this.getClass().getSimpleName();
-        }
+        public String getUnitName()        { return this.name(); }
+        public String getMeasurementType() { return this.getClass().getSimpleName(); }
     }
 
     public enum TemperatureUnit implements IMeasurableUnit {
         CELSIUS, FAHRENHEIT, KELVIN;
-
-        @Override
-        public String getUnitName() {
-            return this.name();
-        }
-
-        @Override
-        public String getMeasurementType() {
-            return this.getClass().getSimpleName();
-        }
+        public String getUnitName()        { return this.name(); }
+        public String getMeasurementType() { return this.getClass().getSimpleName(); }
     }
 
-    public double value;
+    @NotNull(message = "Value must not be null")
+    public Double value;
+
+    @NotBlank(message = "Unit must not be blank")
     public String unit;
+
+    @NotBlank(message = "Measurement type must not be blank")
+    @Pattern(
+        regexp = "LengthUnit|WeightUnit|VolumeUnit|TemperatureUnit",
+        message = "Measurement type must be one of: LengthUnit, WeightUnit, VolumeUnit, TemperatureUnit"
+    )
     public String measurementType;
 
+    public QuantityDTO() {}
+
     public QuantityDTO(double value, IMeasurableUnit unit) {
-        this.value = value;
-        this.unit = unit.getUnitName();
+        this.value           = value;
+        this.unit            = unit.getUnitName();
         this.measurementType = unit.getMeasurementType();
     }
 
     public QuantityDTO(double value, String unit, String measurementType) {
-        this.value = value;
-        this.unit= unit;
+        this.value           = value;
+        this.unit            = unit;
         this.measurementType = measurementType;
     }
 
-    public double getValue() {
-        return value;
-    }
-    public String getUnit() {
-        return unit;
-    }
-    public String getMeasurementType() {
-        return measurementType;
-    }
+    public double getValue()           { return value; }
+    public String getUnit()            { return unit; }
+    public String getMeasurementType() { return measurementType; }
 
     @Override
-    public String toString() {
-        return String.format("%.2f %s", value, unit);
-    }
-
-    // Main method
-    public static void main(String[] args) {
-        QuantityDTO dto1 = new QuantityDTO(2.0,  LengthUnit.FEET);
-        QuantityDTO dto2 = new QuantityDTO(24.0, LengthUnit.INCHES);
-        System.out.println("dto1: " + dto1);
-        System.out.println("dto2: " + dto2);
-        System.out.println("measurementType: " + dto1.getMeasurementType());
-    }
+    public String toString() { return String.format("%.2f %s", value, unit); }
 }
