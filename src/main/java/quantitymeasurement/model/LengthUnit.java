@@ -1,6 +1,6 @@
 package quantitymeasurement.model;
 
-public enum  LengthUnit {
+public enum  LengthUnit implements IMeasurable {
 	FEET(1.0),
     INCHES(1.0 / 12.0),
     YARDS(3.0),
@@ -12,18 +12,23 @@ public enum  LengthUnit {
         this.conversionFactor = conversionFactor;
     }
 
-    // getter for test cases
+    @Override
     public double getConversionFactor() {
         return conversionFactor;
     }
 
-    // convert value in this unit → base unit (feet)
+    @Override
     public double convertToBaseUnit(double value) {
         return value * conversionFactor;
     }
 
-    // convert base unit (feet) → this unit
+    @Override
     public double convertFromBaseUnit(double baseValue) {
         return baseValue / conversionFactor;
+    }
+
+    @Override
+    public String getUnitName() {
+        return name();
     }
 }
