@@ -18,16 +18,28 @@ public interface IQuantityMeasurementRepository
         extends JpaRepository<QuantityMeasurementEntity, Long> {
 
     /** All records for a given operation type (COMPARE, ADD, etc.) */
-    List<QuantityMeasurementEntity> findByOperation(String operation);
+    List<QuantityMeasurementEntity> findByOperation(@Param("operation") String operation);
 
     /** All records for a given measurement type (LengthUnit, WeightUnit, etc.) */
-    List<QuantityMeasurementEntity> findByThisMeasurementType(String type);
+    List<QuantityMeasurementEntity> findByThisMeasurementType(@Param("type") String type);
 
     /** All error records */
-    List<QuantityMeasurementEntity> findByIsError(boolean isError);
+    List<QuantityMeasurementEntity> findByIsError(@Param("isError") boolean isError);
 
     /** Count successful records for a given operation */
-    long countByOperationAndIsErrorFalse(String operation);
+    long countByOperationAndIsErrorFalse(@Param("operation") String operation);
+
+    // ── User-scoped versions (fixes cross-account history leak) ──
+
+    List<QuantityMeasurementEntity> findByUsername(String username);
+
+    List<QuantityMeasurementEntity> findByUsernameAndOperation(String username, String operation);
+
+    List<QuantityMeasurementEntity> findByUsernameAndThisMeasurementType(String username, String type);
+
+    List<QuantityMeasurementEntity> findByUsernameAndIsError(String username, boolean isError);
+
+    long countByUsernameAndOperationAndIsErrorFalse(String username, String operation);
 
     /** Custom JPQL: successful records for a given operation */
     @Query("SELECT e FROM QuantityMeasurementEntity e " +

@@ -1,16 +1,17 @@
 package com.app.quantitymeasurement.controller;
 
-import com.app.quantitymeasurement.config.SecurityConfig;
 import com.app.quantitymeasurement.dto.QuantityMeasurementDTO;
+import com.app.quantitymeasurement.entity.QuantityDTO;
+import com.app.quantitymeasurement.security.JwtUtil;
 import com.app.quantitymeasurement.service.IQuantityMeasurementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -19,21 +20,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Controller unit tests using @WebMvcTest + MockMvc.
+ * UC17 - Controller unit tests using @WebMvcTest + MockMvc.
  *
  * @WebMvcTest  — loads only the web layer, no DB, no full context.
- * @MockitoBean — injects a Mockito mock of IQuantityMeasurementService.
- * @Import(SecurityConfig.class) — brings in our permissive security config
- *                                  so tests aren't blocked by the login page.
+ * @MockBean    — injects a Mockito mock of IQuantityMeasurementService.
  * MockMvc      — simulates HTTP requests without a real server.
  */
 @WebMvcTest(QuantityMeasurementController.class)
-@Import(SecurityConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
 class QuantityMeasurementControllerTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
-    @MockitoBean private IQuantityMeasurementService service;
+    @MockBean  private IQuantityMeasurementService service;
+    @MockBean private JwtUtil jwtUtil;
 
     // ── Helpers ──────────────────────────────────────────────────
 
@@ -57,11 +57,16 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testCompare_returnsOk() throws Exception {
-        Mockito.when(service.compare(Mockito.any(), Mockito.any())).thenReturn(compareDTO());
+        Mockito.when(service.compare(
+                Mockito.any(QuantityDTO.class),
+                Mockito.any(QuantityDTO.class),
+                Mockito.anyString()
+        )).thenReturn(compareDTO());
+
 
         mockMvc.perform(post("/api/measurements/compare")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
                     {
                       "thisQuantity": { "value": 1.0, "unit": "FEET", "measurementType": "LengthUnit" },
                       "thatQuantity": { "value": 12.0, "unit": "INCHES", "measurementType": "LengthUnit" }
@@ -77,11 +82,16 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testAdd_returnsOk() throws Exception {
-        Mockito.when(service.add(Mockito.any(), Mockito.any())).thenReturn(addDTO());
+        Mockito.when(service.add(
+                Mockito.any(QuantityDTO.class),
+                Mockito.any(QuantityDTO.class),
+                Mockito.anyString()
+        )).thenReturn(addDTO());
+
 
         mockMvc.perform(post("/api/measurements/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
                     {
                       "thisQuantity": { "value": 1.0, "unit": "FEET", "measurementType": "LengthUnit" },
                       "thatQuantity": { "value": 12.0, "unit": "INCHES", "measurementType": "LengthUnit" }
@@ -98,8 +108,8 @@ class QuantityMeasurementControllerTest {
     @Test
     void testCompare_invalidMeasurementType_returns400() throws Exception {
         mockMvc.perform(post("/api/measurements/compare")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
                     {
                       "thisQuantity": { "value": 1.0, "unit": "FEET", "measurementType": "InvalidType" },
                       "thatQuantity": { "value": 1.0, "unit": "FEET", "measurementType": "LengthUnit" }
@@ -114,8 +124,8 @@ class QuantityMeasurementControllerTest {
     @Test
     void testAdd_nullValue_returns400() throws Exception {
         mockMvc.perform(post("/api/measurements/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
                     {
                       "thisQuantity": { "value": null, "unit": "FEET", "measurementType": "LengthUnit" },
                       "thatQuantity": { "value": 12.0, "unit": "INCHES", "measurementType": "LengthUnit" }
@@ -128,7 +138,9 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testGetHistory_returnsOkList() throws Exception {
-        Mockito.when(service.getAllMeasurements()).thenReturn(List.of(compareDTO()));
+        Mockito.when(service.getAllMeasurements(Mockito.anyString()))
+                .thenReturn(List.of(compareDTO()));
+
         mockMvc.perform(get("/api/measurements/history"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].operation").value("COMPARE"));
@@ -136,7 +148,9 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testGetHistoryByOperation_returnsOkList() throws Exception {
-        Mockito.when(service.getMeasurementsByOperation("COMPARE")).thenReturn(List.of(compareDTO()));
+        Mockito.when(service.getMeasurementsByOperation(Mockito.eq("COMPARE"), Mockito.anyString()))
+                .thenReturn(List.of(compareDTO()));
+
         mockMvc.perform(get("/api/measurements/history/COMPARE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].operation").value("COMPARE"));
@@ -146,7 +160,9 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testGetHistoryByType_returnsOkList() throws Exception {
-        Mockito.when(service.getMeasurementsByType("LengthUnit")).thenReturn(List.of(compareDTO()));
+        Mockito.when(service.getMeasurementsByType(Mockito.eq("LengthUnit"), Mockito.anyString()))
+                .thenReturn(List.of(compareDTO()));
+
         mockMvc.perform(get("/api/measurements/history/type/LengthUnit"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].thisMeasurementType").value("LengthUnit"));
@@ -156,7 +172,9 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testGetErrorHistory_returnsEmptyList() throws Exception {
-        Mockito.when(service.getErrorHistory()).thenReturn(List.of());
+        Mockito.when(service.getErrorHistory(Mockito.anyString()))
+                .thenReturn(List.of());
+
         mockMvc.perform(get("/api/measurements/history/errored"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -167,7 +185,9 @@ class QuantityMeasurementControllerTest {
 
     @Test
     void testGetOperationCount_returnsCountJson() throws Exception {
-        Mockito.when(service.getOperationCount("COMPARE")).thenReturn(3L);
+        Mockito.when(service.getOperationCount(Mockito.eq("COMPARE"), Mockito.anyString()))
+                .thenReturn(3L);
+
         mockMvc.perform(get("/api/measurements/count/COMPARE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.operation").value("COMPARE"))

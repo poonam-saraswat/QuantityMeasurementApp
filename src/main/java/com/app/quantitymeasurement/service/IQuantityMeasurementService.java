@@ -5,39 +5,32 @@ import com.app.quantitymeasurement.entity.QuantityDTO;
 
 import java.util.List;
 
-/**
- * UC17 - Service interface.
- *
- * Changes from UC16:
- *   - All operation methods return QuantityMeasurementDTO (structured response)
- *   - Three new history/reporting methods added
- */
 public interface IQuantityMeasurementService {
 
-    QuantityMeasurementDTO compare(QuantityDTO thisQ, QuantityDTO thatQ);
+    QuantityMeasurementDTO compare(QuantityDTO thisQ, QuantityDTO thatQ, String username);
 
-    QuantityMeasurementDTO convert(QuantityDTO thisQ, String targetUnit);
+    QuantityMeasurementDTO convert(QuantityDTO thisQ, String targetUnit, String username);
 
-    QuantityMeasurementDTO add(QuantityDTO thisQ, QuantityDTO thatQ);
-    QuantityMeasurementDTO add(QuantityDTO thisQ, QuantityDTO thatQ, String targetUnit);
+    QuantityMeasurementDTO add(QuantityDTO thisQ, QuantityDTO thatQ, String username);
+    QuantityMeasurementDTO add(QuantityDTO thisQ, QuantityDTO thatQ, String targetUnit, String username);
 
-    QuantityMeasurementDTO subtract(QuantityDTO thisQ, QuantityDTO thatQ);
-    QuantityMeasurementDTO subtract(QuantityDTO thisQ, QuantityDTO thatQ, String targetUnit);
+    QuantityMeasurementDTO subtract(QuantityDTO thisQ, QuantityDTO thatQ, String username);
+    QuantityMeasurementDTO subtract(QuantityDTO thisQ, QuantityDTO thatQ, String targetUnit, String username);
 
-    QuantityMeasurementDTO divide(QuantityDTO thisQ, QuantityDTO thatQ);
+    QuantityMeasurementDTO divide(QuantityDTO thisQ, QuantityDTO thatQ, String username);
 
-    /** All records — returns DTO list */
-    List<QuantityMeasurementDTO> getAllMeasurements();
+    /** All records for a specific user */
+    List<QuantityMeasurementDTO> getAllMeasurements(String username);
 
-    /** Records filtered by operation (COMPARE, ADD, etc.) */
-    List<QuantityMeasurementDTO> getMeasurementsByOperation(String operation);
+    /** Records filtered by operation for a specific user */
+    List<QuantityMeasurementDTO> getMeasurementsByOperation(String operation, String username);
 
-    /** Records filtered by measurement type (LengthUnit, etc.) */
-    List<QuantityMeasurementDTO> getMeasurementsByType(String measurementType);
+    /** Records filtered by measurement type for a specific user */
+    List<QuantityMeasurementDTO> getMeasurementsByType(String measurementType, String username);
 
-    /** Records where an error occurred */
-    List<QuantityMeasurementDTO> getErrorHistory();
+    /** Error records for a specific user */
+    List<QuantityMeasurementDTO> getErrorHistory(String username);
 
-    /** Count of successful records for a given operation */
-    long getOperationCount(String operation);
+    /** Count of successful records for a given operation for a specific user */
+    long getOperationCount(String operation, String username);
 }

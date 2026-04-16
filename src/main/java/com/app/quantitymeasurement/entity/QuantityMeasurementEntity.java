@@ -43,6 +43,10 @@ public class QuantityMeasurementEntity implements Serializable {
     private boolean isError;
     private String  errorMessage;
 
+    /** Owner of this record — set from the JWT principal at request time */
+    @Column(name = "username")
+    private String username;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -121,6 +125,8 @@ public class QuantityMeasurementEntity implements Serializable {
     public void setError(boolean v)               { this.isError = v; }
     public String getErrorMessage()               { return errorMessage; }
     public void setErrorMessage(String v)         { this.errorMessage = v; }
+    public String getUsername()                   { return username; }
+    public void setUsername(String v)             { this.username = v; }
     public LocalDateTime getCreatedAt()           { return createdAt; }
     public LocalDateTime getUpdatedAt()           { return updatedAt; }
 
