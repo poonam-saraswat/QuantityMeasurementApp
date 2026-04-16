@@ -38,8 +38,6 @@ QuantityMeasurementApp/
 
 ---
 
-## Week 1: Core Quantity System — TDD Approach & Unit Conversion
-
 ###  Feet & Inches Equality — UC1 & UC2
 
 Created the repository and set up the project structure. Started implementing the Quantity Measurement System using Test Driven Development (TDD). Addressed **UC1** (Feet Equality) to handle feet measurement comparisons using a dedicated `Feet` class with equality logic. Extended functionality to support **UC2** (Inches Equality), allowing comparison of inch values. Both units achieved 100% test coverage at this stage.
@@ -58,7 +56,6 @@ Implemented unit-to-unit conversions between different length units (**UC5**). A
 
 ---
 
-## Week 2: Arithmetic, Categories & Architecture
 
 ###  Addition, Weight Category & Generic Bounds — UC6 to UC10
 
@@ -102,7 +99,6 @@ Integrated a **JDBC Database Repository** to persist all quantity measurement op
 
 ---
 
-## Week 3: Spring Boot, REST API & Security
 
 ### Spring Boot REST Service & Spring Data JPA — UC17
 
