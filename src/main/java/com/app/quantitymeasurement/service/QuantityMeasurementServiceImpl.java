@@ -95,13 +95,14 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     // ── Operations ───────────────────────────────────────────────
 
     @Override
-    public QuantityMeasurementDTO compare(QuantityDTO dto1, QuantityDTO dto2) {
+    public QuantityMeasurementDTO compare(QuantityDTO dto1, QuantityDTO dto2, String username) {
         QuantityModel<IMeasurable> m1 = toModel(dto1);
         QuantityModel<IMeasurable> m2 = toModel(dto2);
         try {
             if (!m1.getUnit().getClass().equals(m2.getUnit().getClass())) {
                 QuantityMeasurementEntity e =
                         buildEntity(m1, m2, "COMPARE", "Not Equal", null, false, null);
+                e.setUsername(username);
                 repository.save(e);
                 return QuantityMeasurementDTO.fromEntity(e);
             }
@@ -110,18 +111,20 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
                     m2.getUnit().convertToBaseUnit(m2.getValue())) <= 1e-5;
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "COMPARE", equal ? "Equal" : "Not Equal", null, false, null);
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         } catch (Exception ex) {
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "COMPARE", null, null, true, ex.getMessage());
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         }
     }
 
     @Override
-    public QuantityMeasurementDTO convert(QuantityDTO dto, String targetUnitName) {
+    public QuantityMeasurementDTO convert(QuantityDTO dto, String targetUnitName, String username) {
         QuantityModel<IMeasurable> m = toModel(dto);
         try {
             IMeasurable targetUnit = resolveUnit(dto.getMeasurementType(), targetUnitName);
@@ -131,23 +134,25 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
                     new QuantityModel<>(converted.getValue(), converted.getUnit());
             QuantityMeasurementEntity e =
                     buildEntity(m, null, "CONVERT", null, resultModel, false, null);
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         } catch (Exception ex) {
             QuantityMeasurementEntity e =
                     buildEntity(m, null, "CONVERT", null, null, true, ex.getMessage());
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         }
     }
 
     @Override
-    public QuantityMeasurementDTO add(QuantityDTO dto1, QuantityDTO dto2) {
-        return add(dto1, dto2, dto1.getUnit());
+    public QuantityMeasurementDTO add(QuantityDTO dto1, QuantityDTO dto2, String username) {
+        return add(dto1, dto2, dto1.getUnit(), username);
     }
 
     @Override
-    public QuantityMeasurementDTO add(QuantityDTO dto1, QuantityDTO dto2, String targetUnitName) {
+    public QuantityMeasurementDTO add(QuantityDTO dto1, QuantityDTO dto2, String targetUnitName, String username) {
         QuantityModel<IMeasurable> m1 = toModel(dto1);
         QuantityModel<IMeasurable> m2 = toModel(dto2);
         try {
@@ -159,23 +164,25 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
                     new QuantityModel<>(result.getValue(), result.getUnit());
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "ADD", null, resultModel, false, null);
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         } catch (Exception ex) {
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "ADD", null, null, true, ex.getMessage());
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         }
     }
 
     @Override
-    public QuantityMeasurementDTO subtract(QuantityDTO dto1, QuantityDTO dto2) {
-        return subtract(dto1, dto2, dto1.getUnit());
+    public QuantityMeasurementDTO subtract(QuantityDTO dto1, QuantityDTO dto2, String username) {
+        return subtract(dto1, dto2, dto1.getUnit(), username);
     }
 
     @Override
-    public QuantityMeasurementDTO subtract(QuantityDTO dto1, QuantityDTO dto2, String targetUnitName) {
+    public QuantityMeasurementDTO subtract(QuantityDTO dto1, QuantityDTO dto2, String targetUnitName, String username) {
         QuantityModel<IMeasurable> m1 = toModel(dto1);
         QuantityModel<IMeasurable> m2 = toModel(dto2);
         try {
@@ -187,18 +194,20 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
                     new QuantityModel<>(result.getValue(), result.getUnit());
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "SUBTRACT", null, resultModel, false, null);
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         } catch (Exception ex) {
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "SUBTRACT", null, null, true, ex.getMessage());
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         }
     }
 
     @Override
-    public QuantityMeasurementDTO divide(QuantityDTO dto1, QuantityDTO dto2) {
+    public QuantityMeasurementDTO divide(QuantityDTO dto1, QuantityDTO dto2, String username) {
         QuantityModel<IMeasurable> m1 = toModel(dto1);
         QuantityModel<IMeasurable> m2 = toModel(dto2);
         try {
@@ -206,11 +215,13 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
                     .divide(new Quantity<>(m2.getValue(), m2.getUnit()));
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "DIVIDE", String.valueOf(result), null, false, null);
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         } catch (Exception ex) {
             QuantityMeasurementEntity e =
                     buildEntity(m1, m2, "DIVIDE", null, null, true, ex.getMessage());
+            e.setUsername(username);
             repository.save(e);
             return QuantityMeasurementDTO.fromEntity(e);
         }
@@ -219,30 +230,30 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     // ── History / reporting ──────────────────────────────────────
 
     @Override
-    public List<QuantityMeasurementDTO> getAllMeasurements() {
-        return QuantityMeasurementDTO.fromEntityList(repository.findAll());
+    public List<QuantityMeasurementDTO> getAllMeasurements(String username) {
+        return QuantityMeasurementDTO.fromEntityList(repository.findByUsername(username));
     }
 
     @Override
-    public List<QuantityMeasurementDTO> getMeasurementsByOperation(String operation) {
+    public List<QuantityMeasurementDTO> getMeasurementsByOperation(String operation, String username) {
         return QuantityMeasurementDTO.fromEntityList(
-                repository.findByOperation(operation.toUpperCase()));
+                repository.findByUsernameAndOperation(username, operation.toUpperCase()));
     }
 
     @Override
-    public List<QuantityMeasurementDTO> getMeasurementsByType(String measurementType) {
+    public List<QuantityMeasurementDTO> getMeasurementsByType(String measurementType, String username) {
         return QuantityMeasurementDTO.fromEntityList(
-                repository.findByThisMeasurementType(measurementType));
+                repository.findByUsernameAndThisMeasurementType(username, measurementType));
     }
 
     @Override
-    public List<QuantityMeasurementDTO> getErrorHistory() {
+    public List<QuantityMeasurementDTO> getErrorHistory(String username) {
         return QuantityMeasurementDTO.fromEntityList(
-                repository.findByIsError(true));
+                repository.findByUsernameAndIsError(username, true));
     }
 
     @Override
-    public long getOperationCount(String operation) {
-        return repository.countByOperationAndIsErrorFalse(operation.toUpperCase());
+    public long getOperationCount(String operation, String username) {
+        return repository.countByUsernameAndOperationAndIsErrorFalse(username, operation.toUpperCase());
     }
 }

@@ -1,13 +1,24 @@
 package com.app.quantitymeasurement;
 
 import com.app.quantitymeasurement.dto.QuantityMeasurementDTO;
+import com.app.quantitymeasurement.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Map;
 
@@ -22,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@ActiveProfiles("test")
 class ApplicationTests {
 
     @LocalServerPort
@@ -29,6 +41,25 @@ class ApplicationTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
+    @MockBean
+    private JwtUtil jwtUtil;
+    @TestConfiguration
+    @Order(1) // Tells Spring: "Run this security config FIRST"
+    static class TestSecurityConfig {
+
+        @Bean
+        @Primary
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            http
+                    .csrf(csrf -> csrf.disable())
+                    .cors(cors -> cors.disable()) // Disable CORS for tests too
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/actuator/**").permitAll()
+                            .anyRequest().permitAll() // The "Open Door" policy
+                    );
+            return http.build();
+        }
+    }
 
     // ── Helpers ──────────────────────────────────────────────────
 
@@ -242,4 +273,6 @@ class ApplicationTests {
         assertEquals(HttpStatus.OK, r.getStatusCode());
         assertEquals("UP", r.getBody().get("status"));
     }
-}
+    }
+
+

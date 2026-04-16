@@ -12,25 +12,23 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * UC17 - REST Controller.
- *
- * Changes from UC16:
- *   - @RestController + @RequestMapping expose HTTP endpoints
- *   - @Valid on every @RequestBody triggers Bean Validation automatically
- *   - All endpoints return QuantityMeasurementDTO (structured response)
- *   - Three new GET endpoints: /history/type, /history/errored, /count
- *   - Swagger @Tag / @Operation annotations for API documentation
- *   - GlobalExceptionHandler handles all exceptions centrally
+ * REST Controller.
+ * FIX: All endpoints now extract the authenticated username from the JWT
+ * (via SecurityContextHolder) and pass it to the service so that history
+ * is always scoped to the logged-in user only.
  */
 @RestController
 @RequestMapping("/api/measurements")
 @Tag(name = "Quantity Measurements", description = "REST API for quantity measurement operations")
+@CrossOrigin(origins = "*")
 public class QuantityMeasurementController {
 
     private static final Logger logger =
@@ -42,16 +40,22 @@ public class QuantityMeasurementController {
         this.service = service;
     }
 
+    /** Extracts the authenticated username from the JWT via Spring Security context. */
+    private String currentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (auth != null && auth.isAuthenticated()) ? auth.getName() : "anonymous";
+    }
+
     // ── POST operations ──────────────────────────────────────────
 
     @PostMapping("/compare")
     @Operation(summary = "Compare two quantities",
-               description = "Returns true/false in the resultString field.")
+            description = "Returns true/false in the resultString field.")
     public ResponseEntity<QuantityMeasurementDTO> compare(
             @Valid @RequestBody CompareRequestDTO request) {
         logger.info("POST /compare");
         return ResponseEntity.ok(
-                service.compare(request.getThisQuantity(), request.getThatQuantity()));
+                service.compare(request.getThisQuantity(), request.getThatQuantity(), currentUsername()));
     }
 
     @PostMapping("/convert")
@@ -60,7 +64,7 @@ public class QuantityMeasurementController {
             @Valid @RequestBody ConvertRequestDTO request) {
         logger.info("POST /convert");
         return ResponseEntity.ok(
-                service.convert(request.getThisQuantity(), request.getTargetUnit()));
+                service.convert(request.getThisQuantity(), request.getTargetUnit(), currentUsername()));
     }
 
     @PostMapping("/add")
@@ -69,8 +73,8 @@ public class QuantityMeasurementController {
             @Valid @RequestBody ArithmeticRequestDTO request) {
         logger.info("POST /add");
         QuantityMeasurementDTO result = request.getTargetUnit() != null
-                ? service.add(request.getThisQuantity(), request.getThatQuantity(), request.getTargetUnit())
-                : service.add(request.getThisQuantity(), request.getThatQuantity());
+                ? service.add(request.getThisQuantity(), request.getThatQuantity(), request.getTargetUnit(), currentUsername())
+                : service.add(request.getThisQuantity(), request.getThatQuantity(), currentUsername());
         return ResponseEntity.ok(result);
     }
 
@@ -80,8 +84,8 @@ public class QuantityMeasurementController {
             @Valid @RequestBody ArithmeticRequestDTO request) {
         logger.info("POST /subtract");
         QuantityMeasurementDTO result = request.getTargetUnit() != null
-                ? service.subtract(request.getThisQuantity(), request.getThatQuantity(), request.getTargetUnit())
-                : service.subtract(request.getThisQuantity(), request.getThatQuantity());
+                ? service.subtract(request.getThisQuantity(), request.getThatQuantity(), request.getTargetUnit(), currentUsername())
+                : service.subtract(request.getThisQuantity(), request.getThatQuantity(), currentUsername());
         return ResponseEntity.ok(result);
     }
 
@@ -91,47 +95,45 @@ public class QuantityMeasurementController {
             @Valid @RequestBody ArithmeticRequestDTO request) {
         logger.info("POST /divide");
         return ResponseEntity.ok(
-                service.divide(request.getThisQuantity(), request.getThatQuantity()));
+                service.divide(request.getThisQuantity(), request.getThatQuantity(), currentUsername()));
     }
 
-    // ── GET history ──────────────────────────────────────────────
+    // ── GET history (all scoped to logged-in user) ────────────────
 
     @GetMapping("/history")
-    @Operation(summary = "Get all measurement history")
+    @Operation(summary = "Get all measurement history for the logged-in user")
     public ResponseEntity<List<QuantityMeasurementDTO>> getHistory() {
-        return ResponseEntity.ok(service.getAllMeasurements());
+        return ResponseEntity.ok(service.getAllMeasurements(currentUsername()));
     }
 
     @GetMapping("/history/{operation}")
-    @Operation(summary = "Get history by operation type",
-               description = "Operation values: COMPARE, CONVERT, ADD, SUBTRACT, DIVIDE")
+    @Operation(summary = "Get history by operation type for the logged-in user")
     public ResponseEntity<List<QuantityMeasurementDTO>> getByOperation(
             @Parameter(description = "Operation type e.g. COMPARE, ADD")
             @PathVariable String operation) {
-        return ResponseEntity.ok(service.getMeasurementsByOperation(operation.toUpperCase()));
+        return ResponseEntity.ok(service.getMeasurementsByOperation(operation.toUpperCase(), currentUsername()));
     }
 
     @GetMapping("/history/type/{measurementType}")
-    @Operation(summary = "Get history by measurement type",
-               description = "Type values: LengthUnit, WeightUnit, VolumeUnit, TemperatureUnit")
+    @Operation(summary = "Get history by measurement type for the logged-in user")
     public ResponseEntity<List<QuantityMeasurementDTO>> getByType(
             @Parameter(description = "Measurement type e.g. LengthUnit, WeightUnit")
             @PathVariable String measurementType) {
-        return ResponseEntity.ok(service.getMeasurementsByType(measurementType));
+        return ResponseEntity.ok(service.getMeasurementsByType(measurementType, currentUsername()));
     }
 
     @GetMapping("/history/errored")
-    @Operation(summary = "Get all error records")
+    @Operation(summary = "Get all error records for the logged-in user")
     public ResponseEntity<List<QuantityMeasurementDTO>> getErrorHistory() {
-        return ResponseEntity.ok(service.getErrorHistory());
+        return ResponseEntity.ok(service.getErrorHistory(currentUsername()));
     }
 
     @GetMapping("/count/{operation}")
-    @Operation(summary = "Count successful operations by type")
+    @Operation(summary = "Count successful operations by type for the logged-in user")
     public ResponseEntity<Map<String, Object>> getOperationCount(
             @Parameter(description = "Operation type e.g. COMPARE, ADD")
             @PathVariable String operation) {
-        long count = service.getOperationCount(operation);
+        long count = service.getOperationCount(operation, currentUsername());
         return ResponseEntity.ok(Map.of(
                 "operation", operation.toUpperCase(),
                 "count",     count));
